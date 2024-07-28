@@ -27,13 +27,10 @@ pub struct Coordinate {
 }
 
 impl Coordinate {
-    pub fn new(
-        (lat_direction, lat_coordinate): (char, i8),
-        (lon_direction, lon_coordinate): (char, i8),
-    ) -> Self {
+    pub fn new(lat_coordinate: i8, lon_coordinate: i8) -> Self {
         Self {
-            lat: Self::as_direction(lat_direction, lat_coordinate),
-            lon: Self::as_direction(lon_direction, lon_coordinate),
+            lat: lat_coordinate,
+            lon: lon_coordinate,
         }
     }
 
@@ -69,17 +66,26 @@ impl<'a> TryFrom<&'a str> for Coordinate {
         let lat_direction = lat.next().unwrap();
         let lon_direction = lon.next().unwrap();
 
-        let lat = match lat.collect::<String>().parse::<i8>() {
-            Ok(val) => val,
-            Err(_) => return Err(PathError::InvalidFileName(&value)),
-        };
+        let lat = parse_coordinate(lat, value)?;
+        let lon = parse_coordinate(lon, value)?;
 
-        let lon = match lon.collect::<String>().parse::<i8>() {
-            Ok(val) => val,
-            Err(_) => return Err(PathError::InvalidFileName(&value)),
-        };
+        Ok(Self::new(
+            Self::as_direction(lat_direction, lat),
+            Self::as_direction(lon_direction, lon),
+        ))
+    }
+}
 
-        Ok(Self::new((lat_direction, lat), (lon_direction, lon)))
+fn parse_coordinate<'a>(value: std::str::Chars, file_name: &'a str) -> Result<i8, PathError<'a>> {
+    match value.collect::<String>().parse::<i8>() {
+        Ok(val) => Ok(val),
+        Err(_) => return Err(PathError::InvalidFileName(file_name)),
+    }
+}
+
+impl PartialEq for Coordinate {
+    fn eq(&self, other: &Self) -> bool {
+        self.lat == other.lat && self.lon == other.lon
     }
 }
 
@@ -91,10 +97,16 @@ mod tests {
     fn get_lat_lon_grid_expected() {
         let lat_long = Coordinate::try_from("N78E030");
         assert_eq!("+70+030", lat_long.unwrap().to_grid_position());
+
+        let lat_long = Coordinate::try_from("N63W023");
+        assert_eq!("+60-030", lat_long.unwrap().to_grid_position());
+
+        let lat_long = Coordinate::try_from("N47E011");
+        assert_eq!("+40+010", lat_long.unwrap().to_grid_position());
     }
 
     #[test]
     fn latlong_from_string_expected() {
-        assert_eq!(-20, Coordinate::try_from("N43W020").unwrap().lon);
+        assert!(Coordinate::new(43, -20) == Coordinate::try_from("N43W020").unwrap());
     }
 }

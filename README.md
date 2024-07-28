@@ -40,8 +40,7 @@ Unix:
 
 The process this app takes to map the data to the relevant directories is as follows:
 1. Enumerate all HGT files to discover which are available
-2. Convert the filenames to the 10x10 grid format
-3. Create the 10x10 grid subdirectories in 'Elevation_data'
-4. Copy the HGT files to the relevant subdirectories
-
-This process does not delete or move the HGT files from the original location - it only copies.
+2. Map the files to the 10x10 grid format
+3. Create the 10x10 grid subdirectories in the LiDAR path
+4. Move all files into the 10x10 grid subdirectories
+5. Symlink the subdirectories over to Ortho4XP's 'Elevation_data' path.

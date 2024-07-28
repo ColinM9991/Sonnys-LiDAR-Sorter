@@ -58,15 +58,21 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     for (mapping, files) in file_map {
-        let elevation_path = &elevation_data_path.join(&mapping);
+        let elevation_path = &hgt_path.join(&mapping);
+        let sym_link_path = &elevation_data_path.join(&mapping);
+        
         if !elevation_path.exists() {
-            fs::create_dir(elevation_path).unwrap()
+            fs::create_dir(elevation_path)?;
+        }
+
+        if !sym_link_path.exists() {
+            create_symlink(elevation_path, sym_link_path)?;
         }
 
         for file in files {
             let new_file_path = elevation_path.join(&file.file_name().unwrap());
 
-            fs::copy(&file, &new_file_path).expect(&format!(
+            fs::rename(&file, &new_file_path).expect(&format!(
                 "Couldn't move '{}' to '{}'",
                 file.to_string_lossy().to_string(),
                 new_file_path.to_string_lossy().to_string()
@@ -77,4 +83,23 @@ fn main() -> Result<(), Box<dyn Error>> {
     println!("Finished");
 
     Ok(())
+}
+
+// Creates a junction using CMD since Windows considers creating a symlink, via std::os::windows::fs::symlink_dir to be privileged action
+// Not really keen on asking people to run an app via Administrator mode since that's not really a secure solution.
+#[cfg(windows)]
+fn create_symlink(source: &PathBuf, target: &PathBuf) -> Result<(), io::Error> {
+    std::process::Command::new("cmd")
+        .arg("/C")
+        .arg("mklink")
+        .arg("/J")
+        .arg(target.to_str().unwrap())
+        .arg(source.to_str().unwrap())
+        .output()
+        .map(|_| Ok(()))?
+}
+
+#[cfg(unix)]
+fn create_symlink(source: &PathBuf, target: &PathBuf) -> Result<(), io::Error> {
+    std::os::unix::fs::symlink_dir(source, target)
 }
