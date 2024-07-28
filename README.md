@@ -6,36 +6,22 @@ It achieves this by mapping out the expected 10x10 grid directories within Ortho
 
 # Usage
 
-For now, this is a command line app. I may eventually turn this into a UI app to promote a better user-experience.
+For now this is a command line app. I may eventually turn this into a UI app to promote a better user-experience.
 
 To use this, you must first have downloaded the files via [Sonny's LiDAR sources](https://sonny.4lima.de/). Afterwards, extract all HGT files into a single directory.
 
-The application will prompt you for a full/absolute path to the LiDAR sources as well as the Ortho4XP Elevation_data directory. These should be fully qualified paths.
-Example:
+The application accepts positional arguments containing full/absolute path to the LiDAR sources as well as the Ortho4XP Elevation_data directory. These should be fully qualified paths.
 
-The following directory holds all HGT files at the root path.
+Example:
 
 Windows:
 ```
-C:\Users\Me\Downloads\LiDAR\Extracted
+sonny_sorter.exe "C:\Users\Me\Downloads\LiDAR\Extracted" "C:\Users\Me\Documents\Ortho4XP\_internal\Ortho4XP_Data\Elevation_data"
 ```
 
 Unix:
 ```
-~/Downloads/LiDAR/Extracted
-```
-
-
-The following directory contains the 10x10 elevation grid subdirectories.
-
-Windows
-```
-C:\Users\Me\Documents\Ortho4XP\_internal\Ortho4XP_Data\Elevation_data
-```
-
-Unix:
-```
-~/Documents/Ortho4XP/_internal/Ortho4XP_Data/Elevation_data
+./sonny_sorter ~/Downloads/LiDAR/Extracted ~/Documents/Ortho4XP/_internal/Ortho4XP_Data/Elevation_data
 ```
 
 The process this app takes to map the data to the relevant directories is as follows:
