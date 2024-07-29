@@ -1,15 +1,17 @@
 mod coordinate;
-mod elevation;
+mod paths;
 
 use std::collections::{HashMap, HashSet};
 use std::error::Error;
 use std::fs;
 use std::path::PathBuf;
 
-use crate::coordinate::*;
-pub use crate::elevation::Paths;
+use paths::Paths;
 
-pub fn run(config: Paths) -> Result<(), Box<dyn Error>> {
+use crate::coordinate::*;
+pub use crate::paths::CliPaths;
+
+pub fn run<T: Paths>(config: T) -> Result<(), Box<dyn Error>> {
     let mut file_map: HashMap<String, HashSet<PathBuf>> = HashMap::new();
 
     for file in config.get_lidar_files()? {
