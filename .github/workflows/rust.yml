@@ -18,15 +18,12 @@ jobs:
           - os: ubuntu-latest
             distro: linux
             binary: sonny_sorter
-            suffix: tar.gz
           - os: macos-latest
             distro: macos
             binary: sonny_sorter
-            suffix: tar.gz
           - os: windows-latest
             distro: windows
             binary: sonny_sorter.exe
-            suffix: zip
 
     runs-on: ${{ matrix.os }}
 
@@ -37,5 +34,5 @@ jobs:
         run: cargo build --release
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.APP_NAME }}_${{ matrix.distro }}.${{ matrix.suffix }}
+          name: ${{ env.APP_NAME }}_${{ matrix.distro }}
           path: ${{ github.workspace }}/target/release/${{ matrix.binary }}
