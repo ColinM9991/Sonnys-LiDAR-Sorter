@@ -10,18 +10,18 @@ For now this is a command line app. I may eventually turn this into a UI app to 
 
 To use this, you must first have downloaded the files via [Sonny's LiDAR sources](https://sonny.4lima.de/). Afterwards, extract all HGT files into a single directory.
 
-The application accepts positional arguments containing full/absolute path to the LiDAR sources as well as the Ortho4XP Elevation_data directory. These should be fully qualified paths.
+The application accepts arguments for absolute path to the LiDAR sources as well as the Ortho4XP Elevation_data directory. These should be fully qualified paths and should optionally be wrapped in quotes if the file path contains spaces.
 
 Example:
 
 Windows:
 ```
-sonny_sorter.exe "C:\Users\Me\Downloads\LiDAR\Extracted" "C:\Users\Me\Documents\Ortho4XP\_internal\Ortho4XP_Data\Elevation_data"
+sonny_sorter.exe -s "C:\Users\Me\Downloads\LiDAR\Extracted" -d "C:\Users\Me\Documents\Ortho4XP\_internal\Ortho4XP_Data\Elevation_data"
 ```
 
 Unix:
 ```
-./sonny_sorter ~/Downloads/LiDAR/Extracted ~/Documents/Ortho4XP/_internal/Ortho4XP_Data/Elevation_data
+./sonny_sorter -s ~/Downloads/LiDAR/Extracted -d ~/Documents/Ortho4XP/_internal/Ortho4XP_Data/Elevation_data
 ```
 
 The process this app takes to map the data to the relevant directories is as follows:

@@ -34,14 +34,6 @@ impl Coordinate {
         }
     }
 
-    fn as_direction(letter: char, value: i8) -> i8 {
-        match letter {
-            'N' | 'E' => value,
-            'S' | 'W' => -value,
-            _ => panic!("Invalid character specified"),
-        }
-    }
-
     pub fn to_grid_position(&self) -> String {
         const DIVISOR: f32 = 10f32;
 
@@ -49,6 +41,14 @@ impl Coordinate {
         let lon = (self.lon as f32 / DIVISOR).floor() * DIVISOR;
 
         return format!("{:>+03.}{:>+04.}", lat, lon);
+    }
+
+    fn as_direction(letter: char, value: i8) -> i8 {
+        match letter {
+            'N' | 'E' => value,
+            'S' | 'W' => -value,
+            _ => panic!("Invalid character specified"),
+        }
     }
 }
 
