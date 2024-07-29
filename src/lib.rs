@@ -63,13 +63,16 @@ fn create_symlink(source: &PathBuf, target: &PathBuf) -> Result<(), std::io::Err
         .arg("/C")
         .arg("mklink")
         .arg("/J")
-        .arg(target.to_str().unwrap())
-        .arg(source.to_str().unwrap())
+        .arg(std::path::absolute(target).unwrap().to_str().unwrap())
+        .arg(std::path::absolute(source).unwrap().to_str().unwrap())
         .output()
         .map(|_| Ok(()))?
 }
 
 #[cfg(unix)]
-fn create_symlink(source: &PathBuf, target: &PathBuf) -> Result<(), io::Error> {
-    std::os::unix::fs::symlink_dir(source, target)
+fn create_symlink(source: &PathBuf, target: &PathBuf) -> Result<(), std::io::Error> {
+    std::os::unix::fs::symlink(
+        std::path::absolute(source).unwrap(),
+        std::path::absolute(target).unwrap(),
+    )
 }
