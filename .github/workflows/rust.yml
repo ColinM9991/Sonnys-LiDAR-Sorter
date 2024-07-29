@@ -1,0 +1,41 @@
+name: Rust
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+env:
+  CARGO_TERM_COLOR: always
+  APP_NAME: sonny_sorter
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            distro: linux
+            binary: sonny_sorter
+            suffix: tar.gz
+          - os: macos-latest
+            distro: macos
+            binary: sonny_sorter
+            suffix: tar.gz
+          - os: windows-latest
+            distro: windows
+            binary: sonny_sorter.exe
+            suffix: zip
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Build
+        run: cargo build --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.APP_NAME }}_${{ matrix.distro }}.${{ matrix.suffix }}
+          path: ${{ github.workspace }}/target/release/${{ matrix.binary }}
