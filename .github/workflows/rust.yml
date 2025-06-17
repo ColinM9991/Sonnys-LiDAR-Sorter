@@ -3,6 +3,7 @@ name: Rust
 on:
   push:
     branches: ["main"]
+    tags: ["release/"]
   pull_request:
     branches: ["main"]
 
@@ -36,3 +37,54 @@ jobs:
         with:
           name: ${{ env.APP_NAME }}_${{ matrix.distro }}
           path: ${{ github.workspace }}/target/release/${{ matrix.binary }}
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/release')
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Linux Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/${{ env.APP_NAME }}_linux/${{ env.APP_NAME }}_linux.zip
+          asset_name: ${{ env.APP_NAME }}_linux.zip
+          asset_content_type: application/zip
+
+      - name: Upload macOS Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/${{ env.APP_NAME }}_macos/${{ env.APP_NAME }}_macos.zip
+          asset_name: ${{ env.APP_NAME }}_macos.zip
+          asset_content_type: application/zip
+
+      - name: Upload Windows Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./artifacts/${{ env.APP_NAME }}_windows/${{ env.APP_NAME }}_windows.zip
+          asset_name: ${{ env.APP_NAME }}_windows.zip
+          asset_content_type: application/zip
