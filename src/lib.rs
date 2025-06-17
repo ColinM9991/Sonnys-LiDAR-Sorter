@@ -16,7 +16,7 @@ pub fn run<T: Paths>(config: T) -> Result<(), Box<dyn Error>> {
 
     for file in config.get_lidar_files()? {
         let file_stem = file.file_stem().unwrap().to_str().unwrap();
-        let coordinate = match Coordinate::try_from(file_stem) {
+        let coordinate = match file_stem.parse::<Coordinate>() {
             Ok(res) => res,
             Err(err) => panic!(
                 "An error occurred when handling '{}'. Error was: {}",
@@ -44,11 +44,7 @@ pub fn run<T: Paths>(config: T) -> Result<(), Box<dyn Error>> {
         for file in files {
             let new_file_path = elevation_path.join(&file.file_name().unwrap());
 
-            fs::rename(&file, &new_file_path).expect(&format!(
-                "Couldn't move '{}' to '{}'",
-                file.to_string_lossy().to_string(),
-                new_file_path.to_string_lossy().to_string()
-            ));
+            fs::rename(&file, &new_file_path)?;
         }
     }
 

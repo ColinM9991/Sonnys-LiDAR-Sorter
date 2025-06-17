@@ -10,12 +10,8 @@ pub trait Paths {
             Ok(files) => files
                 .filter_map(|file| file.ok())
                 .map(|entry| entry.path())
-                .filter_map(|path| {
-                    if path.extension().map_or(false, |ext| ext == "hgt") {
-                        Some(path)
-                    } else {
-                        None
-                    }
+                .filter(|path| {
+                    path.file_stem().is_some() && path.extension().map_or(false, |ext| ext == "hgt")
                 }),
             Err(err) => panic!(
                 "Couldn't enumerate directory {}. Error {}",
